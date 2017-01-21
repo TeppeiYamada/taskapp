@@ -2,10 +2,12 @@ import UIKit
 import RealmSwift
 import UserNotifications
 
-class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate  {
+class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate
+{
     
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet var tableView: UITableView!
+    
     
     let realm = try! Realm()
     
@@ -17,28 +19,14 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
     var task: Task!
     
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
-        let inputViewController:InputViewController = segue.destination as! InputViewController
-        
-        if segue.identifier == "cellSegue" {
-            let indexPath = self.tableView.indexPathForSelectedRow
-            inputViewController.task = taskArray[indexPath!.row]
-        } else {
-            let task = Task()
-            task.date = NSDate()
-        
-            if taskArray.count != 0 {
-                task.id = taskArray.max(ofProperty: "id")! + 1
-            }
-            
-            inputViewController.task = task
-        }
-    }
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
         tableView.reloadData()
+        
+      
     }
+    
     
     
     override func viewDidLoad() {
@@ -50,14 +38,34 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
         searchBar.delegate = self
         
         
-        
     }
+    
     
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?){
+        let inputViewController:InputViewController = segue.destination as! InputViewController
+        
+        if segue.identifier == "cellSegue" {
+            let indexPath = self.tableView.indexPathForSelectedRow
+            inputViewController.task = taskArray[indexPath!.row]
+        } else {
+            let task = Task()
+            task.date = NSDate()
+            
+            if taskArray.count != 0 {
+                task.id = taskArray.max(ofProperty: "id")! + 1
+            }
+            
+            inputViewController.task = task
+        }
+    }
+
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
@@ -125,6 +133,10 @@ class ViewController: UIViewController, UITableViewDelegate, UITableViewDataSour
             taskArray  = try! Realm().objects(Task.self).sorted(byProperty: "date", ascending: false)
         }
         self.tableView.reloadData()
+    }
+    
+    func searchBarSearchButtonClicked(searchBar: UISearchBar) {
+        self.view.endEditing(true)
     }
 
 }
